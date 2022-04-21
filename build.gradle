@@ -1,0 +1,111 @@
+plugins {
+    id "java-library"
+    id "edu.wpi.first.GradleRIO" version "2022.2.1"
+    id 'maven-publish'
+    id 'signing'
+}
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+
+repositories {
+    // Use Maven Central for resolving dependencies.
+    mavenCentral()
+}
+
+
+// Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
+// Also defines JUnit 4.
+dependencies {
+    implementation wpi.java.deps.wpilib()
+    implementation wpi.java.vendor.java()
+
+    testImplementation 'junit:junit:4.12'
+
+    implementation 'com.fizzyapple12.javadi:javadi:1.0.0'
+}
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+group = "com.fizzyapple12.wpilibdi"
+archivesBaseName = "wpilibdi"
+version = "1.0.0"
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = 'wpilibdi'
+            from components.java
+
+            pom {
+                name = 'wpilibdi'
+                packaging = 'jar'
+                // optionally artifactId can be defined here
+                description = 'An extension library for javadi to enable WPILib interoperability'
+                url = 'https://github.com/FizzyApple12/wpilibdi'
+
+                scm {
+                    connection = 'scm:git:https://github.com/FizzyApple12/wpilibdi.git'
+                    developerConnection = 'scm:git:https://github.com/FizzyApple12/wpilibdi.git'
+                    url = 'https://github.com/FizzyApple12/wpilibdi'
+                }
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'FizzyApple12'
+                        name = 'Hazel Roeder'
+                        email = 'davideroeder@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+            def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+
+            credentials {
+                username = ossrhUsername
+                password = ossrhPassword
+            }
+            
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.maven
+}
