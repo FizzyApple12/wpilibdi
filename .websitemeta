@@ -1,3 +1,3 @@
 {
-  "description": "This tool is an extension of the more generic javadi tool, allowing for better interoperability in FRC applications. Being stress tested right along javadi, it has proven reliable and allows for squeezing even more performance out of javadi with optimizations designed for the roboRIO and WPILib."
+  "description": "This tool developed my skills optimizing generic code and creating glue code to turn generic code in to application-specific code. It has been tested right along side javadi and has also been proven reliable."
 }
